@@ -1,0 +1,33 @@
+
+MENU LOGO MAKER
+https://pl.textstudio.com/logo/2259/venture
+
+Sprites
+https://assetstore.unity.com/packages/3d/environments/sci-fi/free-demo-of-low-poly-space-alien-worlds-3d-asset-pack-258683
+
+Sky
+https://assetstore.unity.com/packages/2d/textures-materials/classic-space-skybox-11596
+
+Fonts
+https://www.fontspace.com/sunny-spells-basic-font-f91330
+
+Characters
+https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/stylized-astronaut-114298
+https://assetstore.unity.com/packages/3d/environments/kaykit-free-sample-pack-for-unity-290681#content
+
+
+
+Sounds:
+https://freesound.org/people/kickhat/sounds/264447/ //button click
+https://freesound.org/people/Romariogrande/sounds/495389/ // menu spundtrack
+https://freesound.org/people/SJLeilani/sounds/487749/ //open chest
+https://freesound.org/people/Universfield/sounds/710249/ // walkietalkie
+https://freesound.org/people/MATRIXXX_/sounds/441499/ // backpack jump
+https://freesound.org/people/UlisesFreitas/sounds/235583/ // game soundtrack
+https://freesound.org/people/TechspiredMinds/sounds/729202/ // foootstep
+https://freesound.org/people/jtragaudio/sounds/238159/ // bullet
+https://freesound.org/people/martian/sounds/21438/ // enemy
+
+
+Ground: 
+https://assetstore.unity.com/packages/3d/environments/fantasy/flat-cube-environment-195664
