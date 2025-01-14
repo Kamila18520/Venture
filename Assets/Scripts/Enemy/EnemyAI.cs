@@ -14,117 +14,109 @@ public class EnemyAI : MonoBehaviour
     }
     public PlayerValues enemyCount;
     public EnemyState currentState;
-    public float attackRadius = 2f;      // Zasiêg ataku
-    public float attackCooldown = 1f;   // Czas pomiêdzy atakami
+    public float attackRadius = 2f;    
+    public float attackCooldown = 1f;
     public float attackTime = 4f;
-    public float patrolDetectionRadius = 10f;  // Odleg³oœæ wykrywania gracza
-    public float chaseDetectionRadius = 20f;   // Odleg³oœæ wykrywania w trybie poœcigu
-    private float patrol;
-    public float chaseSpeed = 5f;        // Prêdkoœæ gonienia gracza
-    public float patrolSpeed = 2f;       // Prêdkoœæ patrolowania
-    public float patrolTime = 3f;        // Czas patrolowania w jednym kierunku
-    public float patrolRange = 5f;       // Maksymalny zakres patrolowania od pozycji startowej
+    public float patrolDetectionRadius = 10f; 
+    public float chaseDetectionRadius = 20f; 
+    private float _patrol;
+    public float chaseSpeed = 5f; 
+    public float patrolSpeed = 2f; 
+    public float patrolTime = 3f;   
+    public float patrolRange = 5f; 
 
-    private Transform player;            // Gracz
-    private Vector3 startPosition;       // Pozycja startowa wroga
-    private Vector3 patrolTarget;        // Aktualny cel patrolowania
-    private float patrolTimer;           // Licznik czasu patrolowania
-    private bool isChasing = false;      // Czy wróg goni gracza?
-    private bool isAttacking = false;
-    private float lastAttackTime = 0f;   // Ostatni czas wykonania ataku
+    private Transform _playerTransform;  
+    private Vector3 _startPosition; 
+    private Vector3 _patrolTarget; 
+    private float _patrolTimer; 
+    private bool _isChasing = false;  
+    private bool _isAttacking = false;
+    private float _lastAttackTime = 0f;  
     [SerializeField] private PlayerValues playerHealth;
     [SerializeField] private float distanceToPlayer;
 
-    private Rigidbody rb;                // Rigidbody wroga
+    private Rigidbody rb;  
     [SerializeField] private Animator animator;
 
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player")?.transform; // ZnajdŸ gracza
-        startPosition = transform.position;  // Zapisz pozycjê startow¹
-        patrolTarget = GetRandomPatrolTarget(); // Ustaw pierwszy cel patrolowania
-        rb = GetComponent<Rigidbody>(); // Pobierz Rigidbody
-        patrol = patrolDetectionRadius;
+        _playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform; 
+        _startPosition = transform.position; 
+        _patrolTarget = GetRandomPatrolTarget(); 
+        rb = GetComponent<Rigidbody>(); 
+        _patrol = patrolDetectionRadius;
     }
 
     void Update()
     {
         if (currentState != EnemyState.Dead)
         {
-            if (player == null)
+            if (_playerTransform == null)
             {
-                Patrol(); // Jeœli gracz nie istnieje, wróg patroluje
+                Patrol(); 
                 return;
             }
 
-            distanceToPlayer = Vector3.Distance(transform.position, player.position);
+            distanceToPlayer = Vector3.Distance(transform.position, _playerTransform.position);
 
-
-
-
-            if (!isAttacking)
+            if (!_isAttacking)
             {
-                if (distanceToPlayer <= patrol && distanceToPlayer > attackRadius)
+                if (distanceToPlayer <= _patrol && distanceToPlayer > attackRadius)
                 {
                     currentState = EnemyState.Chasing;
                 }
-                else if (distanceToPlayer > patrol)
+                else if (distanceToPlayer > _patrol)
                 {
                     currentState = EnemyState.Patroling;
                 }
                 else if (distanceToPlayer <= attackRadius)
                 {
                     currentState = EnemyState.Attacking;
-
                 }
             }
 
             if (currentState == EnemyState.Attacking)
             {
-                if (!isAttacking)
+                if (!_isAttacking)
                 {
-                    isAttacking = true;
+                    _isAttacking = true;
                     Attack();
                 }
             }
             else if (currentState == EnemyState.Chasing)
             {
-                patrol = chaseDetectionRadius;
-                animator.SetBool("Attacking", false); // Wy³¹cz atak
+                _patrol = chaseDetectionRadius;
+                animator.SetBool("Attacking", false); 
                 animator.SetFloat("Blend", 1f);
-                ChasePlayer(); // Wróg goni gracza
+                ChasePlayer(); 
             }
             else if (currentState == EnemyState.Patroling)
             {
-                animator.SetBool("Attacking", false); // Wy³¹cz atak
+                animator.SetBool("Attacking", false); 
                 animator.SetFloat("Blend", .5f);
-                Patrol(); // Wróg patroluje
+                Patrol(); 
             }
         }
     }
 
     private void Attack()
     {
-        // Zatrzymaj ruch wroga
         rb.velocity = Vector3.zero;
-
         StartCoroutine(AttackTime());
-
-
     }
 
     IEnumerator AttackTime()
     {
-        animator.SetBool("Attacking", true); // Animacja ataku
+        animator.SetBool("Attacking", true); 
 
         yield return new WaitForSeconds(attackTime);
 
-        if (distanceToPlayer <= patrol && distanceToPlayer > attackRadius)
+        if (distanceToPlayer <= _patrol && distanceToPlayer > attackRadius)
         {
             currentState = EnemyState.Chasing;
         }
-        else if (distanceToPlayer > patrol)
+        else if (distanceToPlayer > _patrol)
         {
             currentState = EnemyState.Patroling;
         }
@@ -132,81 +124,64 @@ public class EnemyAI : MonoBehaviour
         {
             Debug.Log("Player is in Attack Range");
             playerHealth.RemoveValue(10);
-            isAttacking = false;
-            animator.SetBool("Attacking", false); // Wy³¹cz atak
-
+            _isAttacking = false;
+            animator.SetBool("Attacking", false); 
         }
         yield break;
     }
-
 
     private void ChasePlayer()
     {
         if (currentState != EnemyState.Dead)
         {
-            isChasing = true;
-            isAttacking = false;
+            _isChasing = true;
+            _isAttacking = false;
 
-            // Oblicz kierunek do gracza
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-
-            // Rotacja w kierunku gracza
+            Vector3 directionToPlayer = (_playerTransform.position - transform.position).normalized;
             RotateTowards(directionToPlayer);
-
-            // Ograniczenie prêdkoœci poruszania
             Vector3 move = Vector3.ClampMagnitude(directionToPlayer * chaseSpeed * Time.deltaTime, chaseSpeed * Time.deltaTime);
-
-            // Porusz siê w stronê gracza
             rb.MovePosition(transform.position + move);
         }
     }
 
     private void Patrol()
     {
-        if (isChasing)
+        if (_isChasing)
         {
-            patrol = patrolDetectionRadius;
-            isChasing = false;
-            patrolTarget = GetRandomPatrolTarget(); // Po zakoñczeniu gonienia ustaw nowy cel patrolowania
+            _patrol = patrolDetectionRadius;
+            _isChasing = false;
+            _patrolTarget = GetRandomPatrolTarget(); 
         }
 
-        patrolTimer += Time.deltaTime;
+        _patrolTimer += Time.deltaTime;
 
-        if (patrolTimer >= patrolTime || Vector3.Distance(transform.position, patrolTarget) < 0.5f)
+        if (_patrolTimer >= patrolTime || Vector3.Distance(transform.position, _patrolTarget) < 0.5f)
         {
-            patrolTarget = GetRandomPatrolTarget(); // Wybierz nowy cel patrolowania
-            patrolTime = Random.Range(2f, 5f); // Losowy czas patrolowania
-            patrolTimer = 0f;
+            _patrolTarget = GetRandomPatrolTarget(); 
+            patrolTime = Random.Range(2f, 5f);
+            _patrolTimer = 0f;
         }
 
-        // Oblicz kierunek do celu patrolowania
-        Vector3 directionToTarget = (patrolTarget - transform.position).normalized;
-
-        // Rotacja w kierunku patrolowania
+        Vector3 directionToTarget = (_patrolTarget - transform.position).normalized;
         RotateTowards(directionToTarget);
-
-        // Porusz siê w stronê celu patrolowania
         rb.MovePosition(transform.position + directionToTarget * patrolSpeed * Time.deltaTime);
     }
 
     private Vector3 GetRandomPatrolTarget()
     {
-        // Wybierz losowy punkt w zasiêgu patrolowania
         Vector3 randomOffset = new Vector3(
             Random.Range(-patrolRange, patrolRange),
             0f,
             Random.Range(-patrolRange, patrolRange)
         );
 
-        return startPosition + randomOffset;
+        return _startPosition + randomOffset;
     }
 
     private void RotateTowards(Vector3 direction)
     {
-        // Jeœli kierunek nie jest zerowy
         if (direction != Vector3.zero)
         {
-            // Oblicz rotacjê w kierunku poruszania siê (tylko na osi Y)
             Quaternion targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0f, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
@@ -216,23 +191,22 @@ public class EnemyAI : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bullet"))
         {
-
             enemyCount.RemoveValue(1f);
             rb.isKinematic = true;
             animator.SetBool("isDead", true);
-            Destroy(gameObject, 2f); // Zniszcz wroga po trafieniu pociskiem
+            Destroy(gameObject, 2f); 
         }
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, patrol); // Sfera wykrywania gracza
+        Gizmos.DrawWireSphere(transform.position, _patrol); 
 
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(startPosition, patrolRange); // Sfera patrolowania
+        Gizmos.DrawWireSphere(_startPosition, patrolRange); 
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, attackRadius); // Sfera ataku
+        Gizmos.DrawWireSphere(transform.position, attackRadius);
     }
 }

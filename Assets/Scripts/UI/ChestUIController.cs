@@ -37,7 +37,7 @@ public class ChestUIController : MonoBehaviour
                 count++;
             }
         }
-        if (SO_Chest.allChestAreOpen)
+        if (SO_Chest.allChestsAreOpen)
         {
             winGame = true;
         }

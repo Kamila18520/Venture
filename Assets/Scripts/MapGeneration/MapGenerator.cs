@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
-using Unity.Mathematics;
-using System.Security.Cryptography;
+using UnityEngine.UI;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -14,6 +11,7 @@ public class MapGenerator : MonoBehaviour
     public bool spawnEnemies;
     public bool spawnChests;
     public bool spawnWalkie;
+    public bool showMap;
 
 
     [Header("Perlin Noise values")]
@@ -29,7 +27,7 @@ public class MapGenerator : MonoBehaviour
     }
     public float IslandSize;
     [Range(1, 20)] public int NoiseOctaves;
-    [Range(0, 99999999)] public int Seed;
+    [Range(0, 999)] public int SeedRange;
     private float[,] _noiseMap;
 
     [Header("Islands values")]
@@ -41,6 +39,7 @@ public class MapGenerator : MonoBehaviour
     [Header("Material")]
     [SerializeField] private Material _mainMaterial;
     private Texture2D _mainTexture2D;
+    [SerializeField] private Image _mainImage;
 
 
     [Header("Ground")]
@@ -52,7 +51,7 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private GameObject _player;
     [SerializeField] private int playerSpawnHeight = 5;
 
-    [Header("Player")]
+    [Header("Enemy")]
     [SerializeField] private EnemiesSpawner _enemySpawner;
 
 
@@ -82,7 +81,7 @@ public class MapGenerator : MonoBehaviour
         _mainMaterial.SetTexture("_MainTex", _mainTexture2D);
 
         if (generateTerrain) generateEmptyWord = true;
-        if(generateEmptyWord) GenerateTexture2D();
+        if(generateEmptyWord) GenerateMainMap();
 
         if(spawnEnemies)
         {
@@ -96,22 +95,20 @@ public class MapGenerator : MonoBehaviour
     }
 
 
-    public void GenerateTexture2D()
+    public void GenerateMainMap()
     {
 
-        GeneratePerlinNoise();
+        GeneratePerlinNoiseTexture2D();
 
         if (generateTerrain)
         {
             TerrainGenerator.GenerateTerrain();
             Debug.Log("The Terrain has been successfully generated.");
-
         }
 
         if (spawnRandomPlayer)
         {
             SpawnObject.SpawnObjectAtRandomPlace(_player, playerSpawnHeight, _groundParent);
-
         }
 
         if (spawnChests)
@@ -125,7 +122,6 @@ public class MapGenerator : MonoBehaviour
 
         if (spawnWalkie)
         {
-
             SpawnObject.SpawnObjectAtRandomPlace(_walkie, walkieSpawnHeight, _groundParent);
         }
 
@@ -133,9 +129,9 @@ public class MapGenerator : MonoBehaviour
 
     }
 
-    private void GeneratePerlinNoise()
+    private void GeneratePerlinNoiseTexture2D()
     {
-        Vector2 Org = new Vector2(Mathf.Sqrt(Seed), Mathf.Sqrt(Seed));
+        Vector2 Org = new Vector2(UnityEngine.Random.Range(0f, SeedRange), UnityEngine.Random.Range(0f, SeedRange));
 
         // Iterowanie po pikselach tekstury i przypisywanie wartoœci na podstawie szumu
         for (int x = 0; x < TextureSize; x++)
@@ -176,13 +172,27 @@ public class MapGenerator : MonoBehaviour
                 groundEdgeController.CheckNeighbors();  // Wywo³ujemy metodê CheckNeighbors() dla tego obiektu
             }
         }
+        _mainTexture2D.Apply();
+        _mainTexture2D.wrapMode = TextureWrapMode.Clamp;
 
+        // Przypisanie tekstury do UI (Image)
+        if (showMap)
+        {
+            _mainImage.sprite = Sprite.Create(
+                _mainTexture2D,
+                new Rect(0, 0, _mainTexture2D.width, _mainTexture2D.height),
+                new Vector2(0.5f, 0.5f));
+        }
+        else
+        {
+            _mainImage.enabled = false;
+        }
         Debug.Log("The map has been successfully generated.");
     }
 
     public void GenerateMap(int x, int y)
     {
        
-        GameObject copy = Instantiate(GroundGrid,new Vector3(x - (TextureSize/2),0,y - (TextureSize/2)), Quaternion.Euler(0,0,0), _groundParent);
+        GameObject cube = Instantiate(GroundGrid,new Vector3(x - (TextureSize/2),0,y - (TextureSize/2)), Quaternion.Euler(0,0,0), _groundParent);
     } 
 }

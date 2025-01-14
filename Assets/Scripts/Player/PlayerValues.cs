@@ -10,38 +10,19 @@ public class PlayerValues : ScriptableObject
     public float currentValue;
     public bool isNull;
 
-
-    public void StartResetValues()
-    {
+    public void StartResetValues(){
         currentValue = maxValue;
         isNull = false;
     }
 
-    public void RemoveValue(float value)
-    {
-        if(currentValue>0)
-        {
-            currentValue -= value;
-
-        }
-        if(currentValue <=0)
-        {
-            isNull = true;
-        }
+    public void RemoveValue(float value) {
+        if(currentValue>0){currentValue -= value;}
+        if(currentValue <=0){ isNull = true;}
     }
 
-    public void AddValue(float value)
-    {
+    public void AddValue(float value){
         currentValue += value;
-        if (currentValue > 0)
-        {
-            isNull = true;
-        }
-        if (currentValue >= maxValue)
-        {
-            currentValue = maxValue;
-
-        }
+        if (currentValue > 0){isNull = true;}
+        if (currentValue >= maxValue){ currentValue = maxValue;}
     }
-
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemiesSpawner : MonoBehaviour
@@ -29,17 +27,12 @@ public class EnemiesSpawner : MonoBehaviour
         {
             SpawnEnemy();
             enemyCount.AddValue(1);
-
         }
     }
-
     private void SpawnEnemy()
     {
         GameObject enemy = Instantiate(_enemy);
 
         SpawnObject.SpawnObjectAtRandomPlace(enemy, enemySpawnHeight, _groundParent);
     }
-
-
-
 }

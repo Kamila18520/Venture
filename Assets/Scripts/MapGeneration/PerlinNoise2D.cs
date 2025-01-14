@@ -21,6 +21,7 @@ public static class PerlinNoise2D
         }
 
         // Zastosowanie mapy wygaszenia (FallOffMap), aby uzyskaæ efekt "wyspiarski"
+        //return a;
         return a -= FallOffMap(x, y, TextureSize, IslandSize);
     }
 

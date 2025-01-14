@@ -6,14 +6,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_Chect", menuName = "ScriptableObjects/SO_Chest", order = 1)]
 public class SO_Chest : ScriptableObject
 {
-    public bool allChestAreOpen;
+    public bool allChestsAreOpen;
 
     public List<bool> chestsOpened = new List<bool>();
 
     public void ClearSOChest()
     {
         chestsOpened.Clear();
-        allChestAreOpen = false;
+        allChestsAreOpen = false;
     }
     public void AddChest()
     {
@@ -30,7 +30,7 @@ public class SO_Chest : ScriptableObject
 
                 if (i == chestsOpened.Count - 1)
                 {
-                    allChestAreOpen = true;
+                    allChestsAreOpen = true;
                 }
 
                
@@ -40,6 +40,4 @@ public class SO_Chest : ScriptableObject
             }
         }
     }
-
-
 }

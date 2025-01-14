@@ -16,8 +16,6 @@ public class ChestController : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private SphereCollider col;
 
-
-
     private void Start()
     {
         GameObject mainUI = GameObject.FindWithTag("MainUI");
@@ -40,9 +38,6 @@ public class ChestController : MonoBehaviour
             }
         }
     }
-
-
-
     public void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -51,7 +46,6 @@ public class ChestController : MonoBehaviour
             audioSource.Play();
         }
     }
-
     public void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))

@@ -8,14 +8,11 @@ public class BarUpdater : MonoBehaviour
     [SerializeField] private PlayerValues playerValues;
     [SerializeField] private Slider slider;
 
-
     private void Awake()
     {
         playerValues.StartResetValues();
         slider.maxValue = playerValues.maxValue;
-        
     }
-
     private void Update()
     {
         slider.value = playerValues.currentValue;

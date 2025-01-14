@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +8,6 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private Transform _groundParent;
     [SerializeField] private Transform _elementsParent;
 
-    [SerializeField] int countForFun;
     Transform[] groundChildren;
     List<int> groundChildernPositions = new List<int>();
     int randomIndex;
@@ -18,7 +16,6 @@ public class TerrainGenerator : MonoBehaviour
 
     public void GenerateTerrain()
     {
-
         groundChildren = _groundParent.GetComponentsInChildren<Transform>();
         _groundParentLenght = groundChildren.Length;
         for (int i = 0; i < _TerrainGenerator.Length; i++)
@@ -29,12 +26,6 @@ public class TerrainGenerator : MonoBehaviour
         for(int i = 0; i < _groundParentLenght; i++)
         {
             groundChildernPositions.Add(i);
-        }
-
-        if (numberOfAllElements > groundChildren.Length)
-        {
-            Debug.LogError("Mapa nie ma wystarczaj¹co du¿o miejsca na wszystkie elementy");
-            return;
         }
 
         for (int i = 0; i < _TerrainGenerator.Length; i++)
@@ -55,22 +46,20 @@ public class TerrainGenerator : MonoBehaviour
 
         for (int i = 0; i < NumberOfObjects; i++)
         {
-            randomIndex = RandomIndexGenerator();
-
-
-            Transform groundChild = groundChildren[randomIndex];
-            Vector3 terrainObjectPosition = new Vector3( groundChild.position.x, 0.5f, groundChild.position.z );
-
-            int randomRotationY = Random.Range(0, 360);
-
-            
-            GameObject newTerrainObject = Instantiate(generatedPrefab.Prefab, terrainObjectPosition, Quaternion.Euler(0, randomRotationY, 0), _elementsParent);
-
-            float randomScale = Random.Range(generatedPrefab.minScale, generatedPrefab.maxScale);
-
-            newTerrainObject.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
-
-            countForFun++;
+            if (groundChildernPositions != null)
+            {
+                randomIndex = RandomIndexGenerator();
+                Transform groundChild = groundChildren[randomIndex];
+                Vector3 terrainObjectPosition = new Vector3(groundChild.position.x, 0.5f, groundChild.position.z);
+                int randomRotationY = Random.Range(0, 360);
+                GameObject newTerrainObject = Instantiate(generatedPrefab.Prefab, terrainObjectPosition, Quaternion.Euler(0, randomRotationY, 0), _elementsParent);
+                float randomScale = Random.Range(generatedPrefab.minScale, generatedPrefab.maxScale);
+                newTerrainObject.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
+            }
+            else
+            {
+                Debug.Log("There is no enought space to spawm more elements");
+            }
         }
     }
 
@@ -83,9 +72,6 @@ public class TerrainGenerator : MonoBehaviour
         choosenIndex =groundChildernPositions[randomIndex];
         groundChildernPositions.Remove(randomIndex);
         return randomIndex;
-
-        
-
     }
 }
 
@@ -95,7 +81,6 @@ public class GeneratedPrefab
     public string Name;
     public GameObject Prefab;
     public int NumberOfObjects;
-
     public float maxScale = 1.2f;
     public float minScale = 2f;
 }
